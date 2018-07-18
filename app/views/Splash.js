@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 
 import LinearGradient from 'react-native-linear-gradient';
+import firebase from 'react-native-firebase'
 
 import { colors, fonts } from '../styles'
 import Icon from 'react-native-vector-icons/SimpleLineIcons';
@@ -14,7 +15,9 @@ import Icon from 'react-native-vector-icons/SimpleLineIcons';
 export default class Splash extends Component {
 
   componentDidMount () {
-    setTimeout(() => this.props.navigation.navigate('Login'), 1000)
+    firebase.auth().onAuthStateChanged(user => {
+      this.props.navigation.navigate(user ? 'Home' : 'Login')
+    })
   }
 
   render() {

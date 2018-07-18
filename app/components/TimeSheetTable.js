@@ -37,14 +37,14 @@ export default class TimeSheetTable extends Component {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'column',
-    width: '80%'
+    width: '80%',
   },
   header: {
     backgroundColor: colors.primary,
     height: 40,
     justifyContent: 'center',
     alignItems: 'center',
-    borderTopLeftRadius: 25,
+    borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
   },
   headerText: {
@@ -53,6 +53,9 @@ const styles = StyleSheet.create({
   },
   table: {
     padding: 10,
+    backgroundColor: colors.white,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
   },
   tableHeader: {
     flexDirection: 'row',

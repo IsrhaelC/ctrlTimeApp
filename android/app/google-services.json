@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "176248147313",
+    "firebase_url": "https://ctrltime-f9342.firebaseio.com",
+    "project_id": "ctrltime-f9342",
+    "storage_bucket": "ctrltime-f9342.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:176248147313:android:3c8dceaaa7766417",
+        "android_client_info": {
+          "package_name": "com.ctrltimeapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "176248147313-bndh0oa3cg7ot7p67gc8pajkti3g96v3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC0R9M-5awJDc3b7c_h8IbMRo2lVY0xlWs"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -8,7 +8,7 @@ import { createStackNavigator } from 'react-navigation';
 
 const StackNavigator = createStackNavigator({
   Splash: {
-    screen: TimeSheet,
+    screen: Splash,
     navigationOptions: {
       header: null
     }
