@@ -3,37 +3,70 @@ import {
   StyleSheet,
   View,
   Text,
-  TouchableHighlight
+  TouchableOpacity,
+  TextInput
 } from 'react-native';
 
 import LinearGradient from 'react-native-linear-gradient';
+import firebase from 'react-native-firebase'
 
 import { colors, fonts } from '../styles'
 import Icon from 'react-native-vector-icons/SimpleLineIcons';
 
 export default class Signup extends Component {
+
+  constructor () {
+    super()
+    this.state = {
+      email: '',
+      password: '',
+      errorMessage: null
+    }
+  }
+
+  handleSignUp = () => {
+    firebase
+      .auth()
+      .createUserWithEmailAndPassword(this.state.email, this.state.password)
+      .then(() => this.props.navigation.navigate('Home'))
+      .catch(error => {
+        this.setState({ errorMessage: error.message })
+        alert(error.message)
+      })
+  }
+
   render() {
     return (
       <LinearGradient colors={['#3059FE', '#0AB5F5']} style={styles.container}>
         <Text style={styles.title}>{'Signup'}</Text>
         <View style={styles.loginContainer}>
           <Icon name={'hourglass'} size={60} color={colors.primary} style={styles.icon}/>
-          <TouchableHighlight onPress={() => this.props.navigation.navigate('Home')}>
-            <LinearGradient colors={['#3B5998', '#3B5998']} style={styles.buttonLogin}>
-              <Text style={styles.buttonText}>{'Signup with Facebook'}</Text>
-            </LinearGradient>
-          </TouchableHighlight>
-          <TouchableHighlight  onPress={() => this.props.navigation.navigate('Home')}>
-            <LinearGradient colors={['#00ACED', '#00ACED']} style={styles.buttonLogin}>
-              <Text style={styles.buttonText}>{'Signup with Twitter'}</Text>
-            </LinearGradient>
-          </TouchableHighlight>
-          <Text style={styles.textSign}>{'Or'}</Text>
-          <TouchableHighlight  onPress={() => this.props.navigation.navigate('Login')}>
+          <TextInput
+            style={styles.textInput}
+            autoCapitalize="none"
+            placeholder="Email"
+            onChangeText={email => this.setState({ email })}
+            value={this.state.email}
+          />
+          <TextInput
+            secureTextEntry
+            style={styles.textInput}
+            autoCapitalize="none"
+            placeholder="Password"
+            onChangeText={password => this.setState({ password })}
+            value={this.state.password}
+          />
+          <TouchableOpacity  onPress={() => this.handleSignUp()}>
             <LinearGradient colors={['#0BCCEB', '#0A80F5']} start={{ x: 0, y: 1 }} end={{ x: 1, y: 1 }} style={styles.buttonLogin}>
+              <Text style={styles.buttonText}>{'Signup'}</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+          <Text>{'Or'}</Text>
+          <TouchableOpacity  onPress={() => this.props.navigation.navigate('Login')}>
+            <LinearGradient colors={['#0BCCEB', '#0A80F5']} start={{ x: 1, y: 0 }} end={{ x: 1, y: 1 }} style={styles.buttonLogin}>
               <Text style={styles.buttonText}>{'Login'}</Text>
             </LinearGradient>
-          </TouchableHighlight>
+          </TouchableOpacity>
         </View>
       </LinearGradient>
     );
@@ -72,10 +105,9 @@ const styles = StyleSheet.create({
     color: colors.white,
     fontSize: fonts.big
   },
-  icon: {
-  },
-  textSign: {
-    color: colors.dark,
-    fontSize: fonts.big,
+  textInput: {
+    height: 40,
+    width: '90%',
+    borderRadius: 10
   }
 });

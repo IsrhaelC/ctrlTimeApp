@@ -11,6 +11,7 @@ import IconButton from '../components/IconButton'
 import TimeSheetTable from '../components/TimeSheetTable'
 import ModalCustom from '../components/ModalPunch'
 import ModalPreferences from '../components/ModalPreferences'
+import firebase from 'react-native-firebase'
 
 import { colors, fonts } from '../styles'
 
@@ -20,14 +21,27 @@ export default class Home extends Component {
     super()
     this.state = {
       modalPunch: false,
-      modalpreferences: false
+      modalpreferences: false,
+      currentUser: 'null',
+      errorMessage: null
     }
+  }
+
+  componentDidMount() {
+    const { currentUser } = firebase.auth()
+    this.setState({ currentUser })
+  }
+
+  handleSignOut = () => {
+    firebase.auth().signOut()
+      .then(() => this.props.navigation.navigate('Home'))
+      .catch((error) => this.setState({ errorMessage: error.message }));
   }
 
   render() {
     return (
       <View style={styles.container}>
-        <Navbar home={true} title={"Hi, Fulano"}/>
+        <Navbar home={true} title={"Hi, " + this.state.currentUser.email}/>
         <View style={styles.iconContainer}>
           <TouchableOpacity onPress={() => this.props.navigation.navigate('TimeSheet')}>
           <IconButton iconName={"docs"} iconSize={35} iconText={'timeSheet'}/>
@@ -40,7 +54,7 @@ export default class Home extends Component {
           </TouchableOpacity>
         </View>
         <TimeSheetTable />
-        <TouchableOpacity style={styles.exitButton}>
+        <TouchableOpacity style={styles.exitButton} onPress={this.handleSignOut}>
           <Text style={styles.buttonText}>{'Logout'}</Text>
         </TouchableOpacity>
         <ModalCustom visible={this.state.modalPunch} onCancel={() => this.setState({modalPunch: false})}/>

@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
     },
     title: {
         color: colors.white,
-        fontSize: fonts.bigger,
+        fontSize: fonts.big,
     },
     icon: {
         color: colors.white,
