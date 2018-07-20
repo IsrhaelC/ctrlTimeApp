@@ -23,13 +23,21 @@ export default class Home extends Component {
       modalPunch: false,
       modalpreferences: false,
       currentUser: 'null',
-      errorMessage: null
+      errorMessage: null,
+      displayName: 'Hi'
     }
   }
 
   componentDidMount() {
     const { currentUser } = firebase.auth()
     this.setState({ currentUser })
+    var displayName = '';
+    if(currentUser.displayName){
+      displayName = 'Hi, ' + this.state.currentUser.displayName
+    } else {
+      displayName = 'Hi, ' + this.state.currentUser.email
+    }
+    this.setState({displayName: displayName})
   }
 
   handleSignOut = () => {
@@ -41,7 +49,7 @@ export default class Home extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Navbar home={true} title={"Hi, " + this.state.currentUser.email}/>
+        <Navbar home={true} title={this.state.displayName}/>
         <View style={styles.iconContainer}>
           <TouchableOpacity onPress={() => this.props.navigation.navigate('TimeSheet')}>
           <IconButton iconName={"docs"} iconSize={35} iconText={'timeSheet'}/>

@@ -5,11 +5,13 @@ import {
   Text,
   TouchableOpacity,
   Modal,
-  Picker
+  Picker,
+  TextInput
 } from 'react-native';
 
 import { colors, fonts } from '../styles'
 import LinearGradient from 'react-native-linear-gradient';
+import firebase from 'react-native-firebase';
 
 export default class ModalPreferences extends Component {
 
@@ -17,8 +19,22 @@ export default class ModalPreferences extends Component {
     super()
     this.state = {
       hoursDaily: '8',
-      weekStart: 'monday'
+      weekStart: 'monday',
+      name: '',
     }
+  }
+
+  updateUser = () => {
+    const { currentUser } = firebase.auth();
+    const database = firebase.database().ref('preferences/' + currentUser.uid);
+    database.set({ 
+      displayName:  this.state.name,
+      hoursDaily: this.state.hoursDaily,
+      weekStart: this.state.weekStart
+    });
+    currentUser.updateProfile({
+      displayName: this.state.name
+    }).then(() => this.props.onCancel()).catch((error) => alert.name(error.message));
   }
 
   render() {
@@ -34,6 +50,13 @@ export default class ModalPreferences extends Component {
             <View style={styles.modalContent}>
               <Text style={styles.title}>Preferences</Text>
               <View style={styles.contentGroup}>
+                <TextInput
+                  style={styles.textInput}
+                  autoCapitalize="none"
+                  placeholder="Name"
+                  onChangeText={name => this.setState({ name })}
+                  value={this.state.name}
+                />
                 <View style={styles.contentSelect}>
                   <Text style={styles.contentText}>Hours Daily</Text>
                   <Picker
@@ -73,7 +96,7 @@ export default class ModalPreferences extends Component {
                     <Text style={styles.buttonText}>Cancel</Text>
                   </LinearGradient>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={this.props.onCancel}>
+                <TouchableOpacity onPress={this.updateUser}>
                   <LinearGradient colors={['#0A80F5', '#0BCCEB']} start={{ x: 0, y: 1 }} end={{ x: 1, y: 1 }} style={styles.button}>
                     <Text style={styles.buttonText}>Save</Text>
                   </LinearGradient>
@@ -96,9 +119,9 @@ const styles = StyleSheet.create({
   modalContent: {
     backgroundColor: colors.white,
     width: 300,
-    height: 200,
     borderRadius: 30,
-    alignItems: 'center'
+    alignItems: 'center',
+    paddingBottom: 20
   },
   title: {
     fontSize: fonts.bigger,
@@ -139,5 +162,10 @@ const styles = StyleSheet.create({
     width: 270,
     justifyContent: 'space-between',
     paddingTop: 30,
+  },
+  textInput: {
+    height: 40,
+    width: '90%',
+    borderRadius: 10
   }
 });

@@ -10,15 +10,42 @@ import {
 
 import { colors, fonts } from '../styles'
 import LinearGradient from 'react-native-linear-gradient';
+import firebase from 'react-native-firebase'
+import moment from 'moment';
 
 export default class ModalCustom extends Component {
 
   constructor() {
     super()
     this.state = {
-      punchType: '',
-      inOut: ''
+      punchType: 'normal',
+      inOut: 'in',
+      date: '',
+      hours: ''
     }
+  }
+
+  componentDidMount () {
+    var hours = moment(new Date()).format("hh:mm");
+    var date = moment(new Date()).format("DD-MM-YYYY")
+    this.setState({hours, date});
+  }
+
+  componentWillReceiveProps () {
+    var hours = moment(new Date()).format("hh:mm");
+    var date = moment(new Date()).format("DD/MM/YYYY")
+    this.setState({hours, date});
+  }
+
+  handlePunch = () => {
+    const { currentUser } = firebase.auth();
+    const database = firebase.database().ref('punch/' + currentUser.uid);
+    database.set({
+      time: this.state.hours,
+      date: this.state.date,
+      punchType: this.state.punchType,
+      inOut: this.state.inOut
+    }).then(() => this.props.onCancel()).catch((error) => alert.name(error.message));
   }
 
   render() {
@@ -34,8 +61,8 @@ export default class ModalCustom extends Component {
             <View style={styles.modalContent}>
               <Text style={styles.title}>Punch</Text>
               <View style={styles.contentGroup}>
-                <Text style={styles.contentText}>Time: 16: 31</Text>
-                <Text style={styles.contentText}>Date: 09/07/2018</Text>
+                <Text style={styles.contentText}>{'Time: ' + this.state.hours}</Text>
+                <Text style={styles.contentText}>{'Date: ' + this.state.date}</Text>
                 <View style={styles.contentSelect}>
                   <Text style={styles.contentText}>Punch Type</Text>
                   <Picker
@@ -64,7 +91,7 @@ export default class ModalCustom extends Component {
                     <Text style={styles.buttonText}>Cancel</Text>
                   </LinearGradient>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={this.props.onCancel}>
+                <TouchableOpacity onPress={this.handlePunch}>
                   <LinearGradient colors={['#0A80F5', '#0BCCEB']} start={{ x: 0, y: 1 }} end={{ x: 1, y: 1 }} style={styles.button}>
                     <Text style={styles.buttonText}>Confirm</Text>
                   </LinearGradient>
