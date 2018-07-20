@@ -20,21 +20,27 @@ export default class ModalPreferences extends Component {
     this.state = {
       hoursDaily: '8',
       weekStart: 'monday',
-      name: '',
+      displayName: '',
     }
+  }
+
+  componentDidMount () {
+    const { currentUser } = firebase.auth();
+    var displayName = currentUser.displayName;
+    this.setState({ displayName })
   }
 
   updateUser = () => {
     const { currentUser } = firebase.auth();
     const database = firebase.database().ref('preferences/' + currentUser.uid);
     database.set({ 
-      displayName:  this.state.name,
+      displayName:  this.state.displayName,
       hoursDaily: this.state.hoursDaily,
       weekStart: this.state.weekStart
     });
     currentUser.updateProfile({
-      displayName: this.state.name
-    }).then(() => this.props.onCancel()).catch((error) => alert.name(error.message));
+      displayName: this.state.displayName
+    }).then(() => this.props.onCancel()).catch((error) => alert(error.message));
   }
 
   render() {
@@ -54,8 +60,8 @@ export default class ModalPreferences extends Component {
                   style={styles.textInput}
                   autoCapitalize="none"
                   placeholder="Name"
-                  onChangeText={name => this.setState({ name })}
-                  value={this.state.name}
+                  onChangeText={displayName => this.setState({ displayName })}
+                  value={this.state.displayName}
                 />
                 <View style={styles.contentSelect}>
                   <Text style={styles.contentText}>Hours Daily</Text>

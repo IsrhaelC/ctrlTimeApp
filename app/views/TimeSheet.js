@@ -7,11 +7,95 @@ import {
 import CalendarStrip from 'react-native-calendar-strip';
 import TimeSheetTable from '../components/TimeSheetTable';
 import Icon from 'react-native-vector-icons/SimpleLineIcons';
+import firebase from 'react-native-firebase';
+import moment from 'moment';
 
 import Navbar from '../components/Navbar'
 import { colors } from '../styles'
 
 export default class TimeSheet extends Component {
+
+  constructor () {
+    super()
+    this.state = {
+      punchs: [],
+      break: {
+        in: '',
+        out: ''
+      },
+      normal:{
+        in: '',
+        out: ''
+      },
+      lunch: {
+        in: '',
+        out: ''
+      }
+      
+    }
+  }
+
+  componentDidMount () {
+    const database = firebase.database();
+     database.ref("punchs").on("value", snapshot => {
+      const response = snapshot.val();
+      const punchs = !!response ? Object.keys(response).map(uid => ({
+            ...response[uid],
+            uid
+          }))
+        : [];
+      this.setState({ punchs });
+    });
+
+    const dateToday = moment(new Date()).format("DD/MM/YYYY")
+    this.punchs.map(value => {
+      if(value.date === dateToday){
+        if(value.punchType === 'normal') {
+          if(value.inOut === 'in'){
+            this.setState({
+              normal: {
+                in: value.time
+              }
+            })
+          } else {
+            this.setState({
+              normal: {
+                out: value.time
+              }
+            })
+          }
+        } else if(value.punchType === 'lunch') {
+          if(value.inOut === 'in'){
+            this.setState({
+              normal: {
+                in: value.time
+              }
+            })
+          } else {
+            this.setState({
+              normal: {
+                out: value.time
+              }
+            })
+          }
+        } else if(value.punchType === 'break') {
+          if(value.inOut === 'in'){
+            this.setState({
+              normal: {
+                in: value.time
+              }
+            })
+          } else {
+            this.setState({
+              normal: {
+                out: value.time
+              }
+            })
+          }
+        }
+      }
+    })
+  }
 
   render() {
     return (
@@ -33,19 +117,19 @@ export default class TimeSheet extends Component {
         <View style={styles.timeContainer}>
           <View style={styles.inContainer}>
             <Icon name={'check'} size={18} color={colors.primary} style={styles.icon}/>
-            <Text style={styles.inText}>{'in: 8:11'}</Text>
+            <Text style={styles.inText}>{'normal: in: ' + this.state.normal.in ? this.state.normal.in : 'no data'}</Text>
           </View>
           <View style={styles.inContainer}>
             <Icon name={'control-pause'} size={18} color={colors.dark} style={styles.icon}/>
-            <Text style={styles.inText}>{'break: in: 9:34 / out: 9:54'}</Text>
+            <Text style={styles.inText}>{'break: in: ' + this.state.break.in ? this.state.break.in : 'no data' + '/ out: ' + this.state.break.out ? this.state.break.out : 'no data'}</Text>
           </View>
           <View style={styles.inContainer}>
             <Icon name={'cup'} size={18} color={'green'} style={styles.icon}/>
-            <Text style={styles.inText}>{'lunch: in: 12:34 / out: 13:24'}</Text>
+            <Text style={styles.inText}>{'lunch: in: ' + this.state.lunch.in ? this.state.lunch.in : 'no data' + '/ out: ' + this.state.lunch.out ? this.state.lunch.out : 'no data'}</Text>
           </View>
           <View style={styles.inContainer}>
             <Icon name={'close'} size={18} color={'red'} style={styles.icon}/>
-            <Text style={styles.inText}>{'expected out: 17:34'}</Text>
+            <Text style={styles.inText}>{'normal: out: ' + this.state.normal.out ? this.state.normal.out : 'expected out: '}</Text>
           </View>
         </View>
         <TimeSheetTable />
