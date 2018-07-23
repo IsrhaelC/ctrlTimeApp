@@ -137,6 +137,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-admob')
     compile project(':react-native-firebase')
     compile project(':react-native-vector-icons')
     compile project(':react-native-linear-gradient')
@@ -148,6 +149,7 @@ dependencies {
     implementation "com.google.firebase:firebase-core:16.0.1"
     implementation "com.google.firebase:firebase-auth:16.0.2"
     implementation "com.google.firebase:firebase-database:16.0.1"
+    implementation "com.google.firebase:firebase-ads:15.0.1"
 }
 
 // Run this once to be able to run the application with BUCK

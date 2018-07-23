@@ -113,7 +113,7 @@ export default class TimeSheet extends Component {
             highlightDateNameStyle={{color: 'yellow'}}
             disabledDateNameStyle={{color: colors.dark}}
             disabledDateNumberStyle={{color: colors.dark}}
-            onDateSelected={(date) => this.onDateChanged(date)}
+            onDateSelected={date => this.onDateChanged(date)}
           />
         <View style={styles.timeContainer}>
           <View style={styles.inContainer}>

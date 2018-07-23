@@ -8,6 +8,10 @@ import {
   Picker
 } from 'react-native';
 
+import {
+  AdMobInterstitial
+} from 'react-native-admob'
+
 import { colors, fonts } from '../styles'
 import LinearGradient from 'react-native-linear-gradient';
 import firebase from 'react-native-firebase'
@@ -29,6 +33,7 @@ export default class ModalCustom extends Component {
     var hours = moment(new Date()).format("hh:mm");
     var date = moment(new Date()).format("DD-MM-YYYY")
     this.setState({hours, date});
+    
   }
 
   componentWillReceiveProps () {
@@ -46,7 +51,12 @@ export default class ModalCustom extends Component {
       date: this.state.date,
       punchType: this.state.punchType,
       inOut: this.state.inOut
-    }).then(() => this.props.onCancel()).catch((error) => alert.name(error.message));
+    }).then(() => {
+      this.props.onCancel();
+      AdMobInterstitial.setAdUnitID('ca-app-pub-8282389208530498/1577444782');
+      AdMobInterstitial.setTestDevices([AdMobInterstitial.simulatorId]);
+      AdMobInterstitial.requestAd().then(() => AdMobInterstitial.showAd());
+    }).catch((error) => alert.name(error.message));
   }
 
   render() {
