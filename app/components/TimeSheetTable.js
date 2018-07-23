@@ -3,6 +3,51 @@ import { StyleSheet, Text, View } from 'react-native'
 import { colors, fonts } from '../styles'
 
 export default class TimeSheetTable extends Component {
+
+  constructor () {
+    super()
+    this.state = {
+      regularHours: {
+        today: '',
+        week: '',
+        month: '',
+        payPeriod: '',
+      },
+      extraHours: {
+        today: '',
+        week: '',
+        month: '',
+        payPeriod: '',
+      }
+    }
+  }
+
+  componentDidMount () {
+    const database = firebase.database();
+    const { currentUser } = firebase.auth();
+    database.ref("punchs/" + currentUser.uid).on("value", snapshot => {
+      const response = snapshot.val();
+      const punchs = !!response ? Object.keys(response).map(uid => ({
+            ...response[uid],
+            uid
+          }))
+        : [];
+      this.countHours(punchs)
+    });
+  }
+
+  countHours = (punchs) => {
+    const dateToday = moment(new Date()).format("DD/MM/YYYY")
+    punchs.map(value => {
+      if(value.date === dateToday) {
+        this.countHoursToday(value)
+      }
+    });
+  }
+
+  countHoursToday = (punch) => {
+  }
+
   render() {
     return (
       <View style={styles.container}>
