@@ -37,64 +37,63 @@ export default class TimeSheet extends Component {
 
   componentDidMount () {
     const database = firebase.database();
-     database.ref("punchs").on("value", snapshot => {
+    const { currentUser } = firebase.auth();
+    const dateToday = moment(new Date()).format("DD/MM/YYYY")
+    database.ref("punchs/" + currentUser.uid).on("value", snapshot => {
       const response = snapshot.val();
       const punchs = !!response ? Object.keys(response).map(uid => ({
             ...response[uid],
             uid
           }))
         : [];
-      this.setState({ punchs });
-    });
-
-    const dateToday = moment(new Date()).format("DD/MM/YYYY")
-    this.punchs.map(value => {
-      if(value.date === dateToday){
-        if(value.punchType === 'normal') {
-          if(value.inOut === 'in'){
-            this.setState({
-              normal: {
-                in: value.time
-              }
-            })
-          } else {
-            this.setState({
-              normal: {
-                out: value.time
-              }
-            })
-          }
-        } else if(value.punchType === 'lunch') {
-          if(value.inOut === 'in'){
-            this.setState({
-              normal: {
-                in: value.time
-              }
-            })
-          } else {
-            this.setState({
-              normal: {
-                out: value.time
-              }
-            })
-          }
-        } else if(value.punchType === 'break') {
-          if(value.inOut === 'in'){
-            this.setState({
-              normal: {
-                in: value.time
-              }
-            })
-          } else {
-            this.setState({
-              normal: {
-                out: value.time
-              }
-            })
+      punchs.map(value => {
+        if(value.date === dateToday){
+          if(value.punchType === 'normal') {
+            if(value.inOut === 'in'){
+              this.setState({
+                normal: {
+                  in: value.time
+                }
+              })
+            } else {
+              this.setState({
+                normal: {
+                  out: value.time
+                }
+              })
+            }
+          } else if(value.punchType === 'lunch') {
+            if(value.inOut === 'in'){
+              this.setState({
+                lunch: {
+                  in: value.time
+                }
+              })
+            } else {
+              this.setState({
+                lunch: {
+                  out: value.time
+                }
+              })
+            }
+          } else if(value.punchType === 'break') {
+            if(value.inOut === 'in'){
+              this.setState({
+                break: {
+                  in: value.time
+                }
+              })
+            } else {
+              this.setState({
+                break: {
+                  out: value.time
+                }
+              })
+            }
           }
         }
-      }
-    })
+      })
+    });
   }
 
   render() {
@@ -117,19 +116,19 @@ export default class TimeSheet extends Component {
         <View style={styles.timeContainer}>
           <View style={styles.inContainer}>
             <Icon name={'check'} size={18} color={colors.primary} style={styles.icon}/>
-            <Text style={styles.inText}>{'normal: in: ' + this.state.normal.in ? this.state.normal.in : 'no data'}</Text>
+            <Text style={styles.inText}>{this.state.normal.in ? 'normal: in: ' + this.state.normal.in : 'no data'}</Text>
           </View>
           <View style={styles.inContainer}>
             <Icon name={'control-pause'} size={18} color={colors.dark} style={styles.icon}/>
-            <Text style={styles.inText}>{'break: in: ' + this.state.break.in ? this.state.break.in : 'no data' + '/ out: ' + this.state.break.out ? this.state.break.out : 'no data'}</Text>
+            <Text style={styles.inText}>{this.state.break.in ? 'break: in: ' + this.state.break.in : 'in: no data'}{this.state.break.out ? ' / out: ' + this.state.break.out : ' / out: no data'}</Text>
           </View>
           <View style={styles.inContainer}>
             <Icon name={'cup'} size={18} color={'green'} style={styles.icon}/>
-            <Text style={styles.inText}>{'lunch: in: ' + this.state.lunch.in ? this.state.lunch.in : 'no data' + '/ out: ' + this.state.lunch.out ? this.state.lunch.out : 'no data'}</Text>
+            <Text style={styles.inText}>{this.state.lunch.in ? 'lunch: in: ' + this.state.lunch.in : 'in: no data'}{this.state.lunch.out ? ' / out: ' + this.state.lunch.out : ' / out: no data'}</Text>
           </View>
           <View style={styles.inContainer}>
             <Icon name={'close'} size={18} color={'red'} style={styles.icon}/>
-            <Text style={styles.inText}>{'normal: out: ' + this.state.normal.out ? this.state.normal.out : 'expected out: '}</Text>
+            <Text style={styles.inText}>{this.state.normal.out ? 'normal: out: ' + this.state.normal.out : 'expected out: '}</Text>
           </View>
         </View>
         <TimeSheetTable />

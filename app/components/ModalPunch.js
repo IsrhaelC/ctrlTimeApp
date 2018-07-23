@@ -40,10 +40,9 @@ export default class ModalCustom extends Component {
   handlePunch = () => {
     const { currentUser } = firebase.auth();
     const punchUid = Math.floor(Math.random() * 1000) + 1;
-    const database = firebase.database().ref('punchs/' + punchUid);
+    const database = firebase.database().ref('punchs/' + currentUser.uid + '/' + punchUid);
     database.set({
-      user: currentUser.uid,
-      punchData: this.state.hours,
+      time: this.state.hours,
       date: this.state.date,
       punchType: this.state.punchType,
       inOut: this.state.inOut
