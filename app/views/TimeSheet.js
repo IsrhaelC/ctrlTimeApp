@@ -46,60 +46,61 @@ export default class TimeSheet extends Component {
             uid
           }))
         : [];
-      punchs.map(value => {
-        if(value.date === dateToday){
-          if(value.punchType === 'normal') {
-            if(value.inOut === 'in'){
-              this.setState({
-                normal: {
-                  in: value.time
-                }
-              })
-            } else {
-              this.setState({
-                normal: {
-                  out: value.time
-                }
-              })
-            }
-          } else if(value.punchType === 'lunch') {
-            if(value.inOut === 'in'){
-              this.setState({
-                lunch: {
-                  in: value.time
-                }
-              })
-            } else {
-              this.setState({
-                lunch: {
-                  out: value.time
-                }
-              })
-            }
-          } else if(value.punchType === 'break') {
-            if(value.inOut === 'in'){
-              this.setState({
-                break: {
-                  in: value.time
-                }
-              })
-            } else {
-              this.setState({
-                break: {
-                  out: value.time
-                }
-              })
-            }
-          }
-        }
-      })
+      this.loadPunchs(punchs, dateToday)
     });
+  }
+
+  loadPunchs = (punchs, dateToday) => {
+    this.setState({
+      punchs: punchs
+    })
+    var normalIn, normalOut, breakIn, breakOut, lunchIn, lunchOut = '';
+    punchs.map(value => {
+      if(value.date === dateToday){
+        switch (value.punchType) {
+          case 'normal':
+            if(value.inOut === 'in'){
+              normalIn = value.time
+            } else {
+              normalOut = value.time
+            }
+            break;
+          case 'break':
+            if(value.inOut === 'in'){
+              breakIn = value.time
+            } else {
+              breakOut = value.time
+            }
+            break;
+          case 'lunch':
+            if(value.inOut === 'in'){
+              lunchIn = value.time
+            } else {
+              lunchOut = value.time
+            }
+            break;
+          default:
+            break;
+        }
+      }
+    })
+    this.setState({
+      break: { in: breakIn, out: breakOut },
+      normal:{ in: normalIn, out: normalOut },
+      lunch: { in: lunchIn, out: lunchOut }
+    })
+  }
+
+  onDateChanged = (date) => {
+    const newDate = moment(date).format("DD/MM/YYYY");
+    const punchs = this.state.punchs;
+    this.loadPunchs(punchs, newDate)
   }
 
   render() {
     return (
       <View style={styles.container}>
-        <Navbar home={true} title={"TimeSheet"}/>
+        <Navbar home={true} title={'TimeSheet'}/>
         <CalendarStrip
           calendarAnimation={{type: 'sequence', duration: 100}}
             daySelectionAnimation={{type: 'border', duration: 200, borderWidth: 1, borderHighlightColor: colors.white}}
@@ -112,6 +113,7 @@ export default class TimeSheet extends Component {
             highlightDateNameStyle={{color: 'yellow'}}
             disabledDateNameStyle={{color: colors.dark}}
             disabledDateNumberStyle={{color: colors.dark}}
+            onDateSelected={(date) => this.onDateChanged(date)}
           />
         <View style={styles.timeContainer}>
           <View style={styles.inContainer}>
