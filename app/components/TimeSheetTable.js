@@ -1,51 +1,60 @@
 import React, { Component } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { colors, fonts } from '../styles'
+import { AsyncStorage } from 'react-native'
+import { constaints } from '../config'
+import moment from 'moment';
+import momentDuration from 'moment-duration-format';
 
 export default class TimeSheetTable extends Component {
 
   constructor () {
     super()
     this.state = {
+      punchs: [],
       regularHours: {
         today: '',
         week: '',
         month: '',
-        payPeriod: '',
+        payPeriod: ''
       },
-      extraHours: {
-        today: '',
-        week: '',
-        month: '',
-        payPeriod: '',
+      punchToday: {
+      in: '',
+      out: '',
       }
     }
   }
 
   componentDidMount () {
-    const database = firebase.database();
-    const { currentUser } = firebase.auth();
-    database.ref("punchs/" + currentUser.uid).on("value", snapshot => {
-      const response = snapshot.val();
-      const punchs = !!response ? Object.keys(response).map(uid => ({
-            ...response[uid],
-            uid
-          }))
-        : [];
-      this.countHours(punchs)
-    });
+    AsyncStorage.getItem(constaints.USER_PUNCH).then(punchs => {
+      this.countHours(JSON.parse(punchs));
+    })
   }
 
   countHours = (punchs) => {
-    const dateToday = moment(new Date()).format("DD/MM/YYYY")
-    punchs.map(value => {
-      if(value.date === dateToday) {
-        this.countHoursToday(value)
+    const today = moment(new Date()).format("DD/MM/YYYY");
+    punchs.map(punch => {
+      if(punch.date === today){
+        if(punch.punchType === 'normal' && punch.inOut === 'in'){
+          alert(punch.dateForCalc)
+          this.setState({punchToday: {in: punch.dateForCalc}})
+        }
+        if(punch.punchType === 'normal' && punch.inOut === 'out'){
+          this.setState({punchToday: {in: punch.dateForCalc}})
+        }
       }
-    });
-  }
-
-  countHoursToday = (punch) => {
+    })
+    alert(this.state.punchToday.in)
+    if(this.state.punchToday.in != '' && this.state.punchToday.out != ''){
+      var date1 = moment(this.state.punchToday.in);
+      var date2 = moment(this.state.punchToday.out);
+      var hoursToday = date1.diff(date2)
+      this.setState({
+        regularHours: {
+          today: momentDuration.duration(hoursToday, "minutes").format()
+        }
+      })
+    }
   }
 
   render() {
@@ -61,7 +70,7 @@ export default class TimeSheetTable extends Component {
           </View>
           <View style={styles.tableBody}>
             <View style={styles.tableRow}>
-              <Text style={styles.rowText}>{"today"}</Text>
+              <Text style={styles.rowText}>{"today: " + this.state.regularHours.today ? this.state.regularHours.today : 'None'}</Text>
             </View>
             <View style={styles.tableRow}>
               <Text style={styles.rowText}>{"week"}</Text>

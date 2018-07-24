@@ -1,0 +1,1 @@
+export default { USER_PUNCH: 'user_punch' }

@@ -16,8 +16,10 @@ import { colors, fonts } from '../styles'
 import LinearGradient from 'react-native-linear-gradient';
 import firebase from 'react-native-firebase'
 import moment from 'moment';
+import { AsyncStorage } from 'react-native'
+import { constaints } from '../config'
 
-export default class ModalCustom extends Component {
+export default class ModalPunch extends Component {
 
   constructor() {
     super()
@@ -25,21 +27,27 @@ export default class ModalCustom extends Component {
       punchType: 'normal',
       inOut: 'in',
       date: '',
-      hours: ''
+      hours: '',
+      punchs : [],
+      dateForCalc: ''
     }
   }
 
   componentDidMount () {
     var hours = moment(new Date()).format("hh:mm");
-    var date = moment(new Date()).format("DD-MM-YYYY")
-    this.setState({hours, date});
-    
+    var date = moment(new Date()).format("DD-MM-YYYY");
+    var dateForCalc = moment(new Date()).format("DD-MM-YYYY hh:mm");
+    this.setState({hours, date, dateForCalc});
+    AsyncStorage.getItem(constaints.USER_PUNCH).then(punchs => {
+      this.setState({ punchs: JSON.parse(punchs)})
+    })
   }
 
   componentWillReceiveProps () {
     var hours = moment(new Date()).format("hh:mm");
-    var date = moment(new Date()).format("DD/MM/YYYY")
-    this.setState({hours, date});
+    var date = moment(new Date()).format("DD-MM-YYYY");
+    var dateForCalc = moment(new Date()).format("DD-MM-YYYY hh:mm");
+    this.setState({hours, date, dateForCalc});
   }
 
   handlePunch = () => {
@@ -50,7 +58,8 @@ export default class ModalCustom extends Component {
       time: this.state.hours,
       date: this.state.date,
       punchType: this.state.punchType,
-      inOut: this.state.inOut
+      inOut: this.state.inOut,
+      dateForCalc: this.state.dateForCalc
     }).then(() => {
       this.props.onCancel();
       AdMobInterstitial.setAdUnitID('ca-app-pub-8282389208530498/1577444782');

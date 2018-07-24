@@ -1,14 +1,11 @@
 import React, { Component } from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-} from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import CalendarStrip from 'react-native-calendar-strip';
 import TimeSheetTable from '../components/TimeSheetTable';
 import Icon from 'react-native-vector-icons/SimpleLineIcons';
-import firebase from 'react-native-firebase';
 import moment from 'moment';
+import { AsyncStorage } from 'react-native'
+import { constaints } from '../config'
 
 import Navbar from '../components/Navbar'
 import { colors } from '../styles'
@@ -36,18 +33,10 @@ export default class TimeSheet extends Component {
   }
 
   componentDidMount () {
-    const database = firebase.database();
-    const { currentUser } = firebase.auth();
     const dateToday = moment(new Date()).format("DD/MM/YYYY")
-    database.ref("punchs/" + currentUser.uid).on("value", snapshot => {
-      const response = snapshot.val();
-      const punchs = !!response ? Object.keys(response).map(uid => ({
-            ...response[uid],
-            uid
-          }))
-        : [];
-      this.loadPunchs(punchs, dateToday)
-    });
+    AsyncStorage.getItem(constaints.USER_PUNCH).then(punchs => {
+      this.loadPunchs(JSON.parse(punchs), dateToday);
+    })
   }
 
   loadPunchs = (punchs, dateToday) => {

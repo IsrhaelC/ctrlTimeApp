@@ -9,9 +9,11 @@ import {
 import Navbar from '../components/Navbar'
 import IconButton from '../components/IconButton'
 import TimeSheetTable from '../components/TimeSheetTable'
-import ModalCustom from '../components/ModalPunch'
+import ModalPunch from '../components/ModalPunch'
 import ModalPreferences from '../components/ModalPreferences'
 import firebase from 'react-native-firebase'
+import { AsyncStorage } from 'react-native'
+import { constaints } from '../config'
 
 import { colors, fonts } from '../styles'
 
@@ -28,8 +30,21 @@ export default class Home extends Component {
   }
 
   componentDidMount() {
+    //Current User
     const { currentUser } = firebase.auth()
     this.setState({ currentUser })
+
+    //Punch User
+    const database = firebase.database();
+    database.ref("punchs/" + currentUser.uid).on("value", snapshot => {
+      const response = snapshot.val();
+      const punchs = !!response ? Object.keys(response).map(uid => ({
+            ...response[uid],
+            uid
+          }))
+        : [];
+      AsyncStorage.setItem(constaints.USER_PUNCH, JSON.stringify(punchs))
+    });
   }
 
   handleSignOut = () => {
@@ -57,7 +72,7 @@ export default class Home extends Component {
         <TouchableOpacity style={styles.exitButton} onPress={this.handleSignOut}>
           <Text style={styles.buttonText}>{'Logout'}</Text>
         </TouchableOpacity>
-        <ModalCustom visible={this.state.modalPunch} onCancel={() => this.setState({modalPunch: false})}/>
+        <ModalPunch visible={this.state.modalPunch} onCancel={() => this.setState({modalPunch: false})}/>
         <ModalPreferences visible={this.state.modalpreferences} onCancel={() => this.setState({modalpreferences: false})}/>
       </View>
     );
